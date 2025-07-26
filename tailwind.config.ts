@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -61,7 +62,42 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				'data-source': {
+					DEFAULT: 'hsl(var(--data-source))',
+					bg: 'hsl(var(--data-source-bg))'
+				},
+				transform: {
+					DEFAULT: 'hsl(var(--transform))',
+					bg: 'hsl(var(--transform-bg))'
+				},
+				filter: {
+					DEFAULT: 'hsl(var(--filter))',
+					bg: 'hsl(var(--filter-bg))'
+				},
+				aggregate: {
+					DEFAULT: 'hsl(var(--aggregate))',
+					bg: 'hsl(var(--aggregate-bg))'
+				},
+				output: {
+					DEFAULT: 'hsl(var(--output))',
+					bg: 'hsl(var(--output-bg))'
 				}
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-surface': 'var(--gradient-surface)',
+				'gradient-node': 'var(--gradient-node)'
+			},
+			boxShadow: {
+				'sm': 'var(--shadow-sm)',
+				'md': 'var(--shadow-md)',
+				'lg': 'var(--shadow-lg)',
+				'glow': 'var(--shadow-glow)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
