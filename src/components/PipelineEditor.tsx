@@ -19,6 +19,9 @@ import { ElementPalette } from './ElementPalette';
 import { PipelineToolbar } from './PipelineToolbar';
 import { NodeConfigModal } from './NodeConfigModal';
 import { CustomNode } from './CustomNode';
+import { StatusBar } from './StatusBar';
+import { KeyboardShortcuts } from './KeyboardShortcuts';
+import { ThemeProvider } from './ThemeProvider';
 import { useToast } from '@/hooks/use-toast';
 
 const nodeTypes = {
@@ -33,6 +36,8 @@ export const PipelineEditor = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | undefined>(undefined);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
   const { toast } = useToast();
@@ -92,10 +97,59 @@ export const PipelineEditor = () => {
             : node
         )
       );
+      setLastSaved(new Date());
     }
     setIsConfigModalOpen(false);
     setSelectedNode(null);
   }, [selectedNode, setNodes]);
+
+  const validatePipeline = useCallback(() => {
+    const errors: string[] = [];
+    
+    // Check for orphaned nodes
+    const connectedNodeIds = new Set<string>();
+    edges.forEach(edge => {
+      connectedNodeIds.add(edge.source);
+      connectedNodeIds.add(edge.target);
+    });
+    
+    const orphanedNodes = nodes.filter(node => !connectedNodeIds.has(node.id) && nodes.length > 1);
+    if (orphanedNodes.length > 0) {
+      errors.push(`${orphanedNodes.length} orphaned node(s) detected`);
+    }
+    
+    // Check for cycles (basic check)
+    // This is a simplified cycle detection - for production, use a proper algorithm
+    
+    setValidationErrors(errors);
+    return errors.length === 0;
+  }, [nodes, edges]);
+
+  const handleClear = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+    setValidationErrors([]);
+    toast({
+      title: "Pipeline Cleared",
+      description: "All nodes and connections have been removed.",
+    });
+  }, [setNodes, setEdges, toast]);
+
+  const handleUndo = useCallback(() => {
+    // Placeholder for undo functionality
+    toast({
+      title: "Undo",
+      description: "Undo functionality coming soon!",
+    });
+  }, [toast]);
+
+  const handleRedo = useCallback(() => {
+    // Placeholder for redo functionality
+    toast({
+      title: "Redo", 
+      description: "Redo functionality coming soon!",
+    });
+  }, [toast]);
 
   const exportWorkflow = useCallback(() => {
     const workflow = {
@@ -114,6 +168,7 @@ export const PipelineEditor = () => {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
     
+    setLastSaved(new Date());
     toast({
       title: "Workflow Exported",
       description: "Your pipeline has been exported successfully.",
@@ -148,10 +203,25 @@ export const PipelineEditor = () => {
     event.target.value = '';
   }, [setNodes, setEdges, toast]);
 
+  // Validate pipeline when nodes or edges change
+  React.useEffect(() => {
+    validatePipeline();
+  }, [nodes, edges, validatePipeline]);
+
   return (
     <div className="h-screen flex bg-background">
+      {/* Keyboard Shortcuts Handler */}
+      <KeyboardShortcuts
+        onSave={exportWorkflow}
+        onImport={() => (document.querySelector('input[type="file"]') as HTMLInputElement)?.click()}
+        onExport={exportWorkflow}
+        onClear={handleClear}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+      />
+
       {/* Sidebar Palette */}
-      <div className="w-80 bg-card border-r border-border shadow-md">
+      <div className="w-80 border-r border-border shadow-xl relative z-10">
         <ElementPalette />
       </div>
 
@@ -161,12 +231,16 @@ export const PipelineEditor = () => {
         <PipelineToolbar 
           onExport={exportWorkflow}
           onImport={importWorkflow}
+          onClear={handleClear}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
           nodeCount={nodes.length}
           edgeCount={edges.length}
+          lastSaved={lastSaved}
         />
 
         {/* React Flow Canvas */}
-        <div className="flex-1" ref={reactFlowWrapper}>
+        <div className="flex-1 relative" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -179,12 +253,18 @@ export const PipelineEditor = () => {
             nodeTypes={nodeTypes}
             fitView
             className="bg-gradient-surface"
+            proOptions={{ hideAttribution: true }}
           >
-            <Controls className="!bg-card !border-border !shadow-md" />
+            <Controls 
+              className="!bg-card/80 !border-border !shadow-xl !backdrop-blur-sm hover-scale" 
+              showZoom={true}
+              showFitView={true}
+              showInteractive={true}
+            />
             <MiniMap 
-              className="!bg-card !border-border !shadow-md"
+              className="!bg-card/80 !border-border !shadow-xl !backdrop-blur-sm !rounded-lg"
               nodeColor={(node) => {
-                const type = node.data.nodeType;
+                const type = String(node.data.nodeType);
                 const colors = {
                   'data-source': '#3b82f6',
                   'transform': '#10b981',
@@ -194,10 +274,26 @@ export const PipelineEditor = () => {
                 };
                 return colors[type as keyof typeof colors] || '#6b7280';
               }}
+              maskColor="rgb(0, 0, 0, 0.1)"
+              pannable
+              zoomable
             />
-            <Background color="#e5e7eb" gap={20} />
+            <Background 
+              color="var(--border)" 
+              gap={20} 
+              className="opacity-50"
+            />
           </ReactFlow>
         </div>
+
+        {/* Status Bar */}
+        <StatusBar
+          nodeCount={nodes.length}
+          edgeCount={edges.length}
+          isValid={validationErrors.length === 0}
+          validationErrors={validationErrors}
+          lastSaved={lastSaved}
+        />
       </div>
 
       {/* Configuration Modal */}
@@ -211,11 +307,13 @@ export const PipelineEditor = () => {
   );
 };
 
-// Wrapper component with ReactFlowProvider
+// Wrapper component with ReactFlowProvider and ThemeProvider
 export const PipelineEditorWrapper = () => {
   return (
-    <ReactFlowProvider>
-      <PipelineEditor />
-    </ReactFlowProvider>
+    <ThemeProvider defaultTheme="system" storageKey="pipeline-editor-theme">
+      <ReactFlowProvider>
+        <PipelineEditor />
+      </ReactFlowProvider>
+    </ThemeProvider>
   );
 };

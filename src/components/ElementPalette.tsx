@@ -60,10 +60,10 @@ export const ElementPalette = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-gradient-surface">
       {/* Header */}
-      <div className="p-6 border-b border-border bg-gradient-surface">
-        <h2 className="text-xl font-semibold text-foreground mb-2">Pipeline Elements</h2>
+      <div className="p-6 border-b border-border bg-gradient-to-r from-primary/5 to-primary-glow/5 backdrop-blur-sm">
+        <h2 className="text-xl font-semibold text-foreground mb-2 gradient-text">Pipeline Elements</h2>
         <p className="text-sm text-muted-foreground">
           Drag elements to the canvas to build your data pipeline
         </p>
@@ -71,7 +71,7 @@ export const ElementPalette = () => {
 
       {/* Element List */}
       <div className="flex-1 p-4 space-y-3 overflow-y-auto">
-        {paletteElements.map((element) => {
+        {paletteElements.map((element, index) => {
           const IconComponent = element.icon;
           
           return (
@@ -80,26 +80,30 @@ export const ElementPalette = () => {
               draggable
               onDragStart={(event) => onDragStart(event, element.type)}
               className={`
-                p-4 rounded-lg border-2 cursor-grab active:cursor-grabbing
+                p-4 rounded-xl border-2 cursor-grab active:cursor-grabbing
                 ${element.bgColor}
-                hover:shadow-md transition-all duration-200
-                hover:scale-[1.02] hover:-translate-y-0.5
-                group
+                hover:shadow-lg transition-all duration-300
+                hover:scale-[1.02] hover:-translate-y-1
+                group animate-fade-in glass backdrop-blur-sm
               `}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="flex items-start space-x-3">
                 <div className={`
-                  p-2 rounded-md bg-white shadow-sm
-                  group-hover:shadow-md transition-shadow duration-200
+                  p-3 rounded-xl bg-white shadow-lg
+                  group-hover:shadow-xl transition-all duration-300
+                  group-hover:scale-110 group-hover:rotate-6
+                  relative overflow-hidden
                 `}>
-                  <IconComponent className={`w-5 h-5 ${element.color}`} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent pointer-events-none"></div>
+                  <IconComponent className={`w-6 h-6 ${element.color} relative z-10`} />
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground mb-1">
+                  <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors duration-200">
                     {element.label}
                   </h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed group-hover:text-foreground transition-colors duration-200">
                     {element.description}
                   </p>
                 </div>
@@ -110,11 +114,14 @@ export const ElementPalette = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border bg-muted/30">
+      <div className="p-4 border-t border-border bg-gradient-to-r from-muted/30 to-muted/10 backdrop-blur-sm">
         <div className="text-xs text-muted-foreground text-center">
-          <p className="mb-1">💡 <strong>Tips:</strong></p>
-          <p>• Double-click nodes to configure</p>
-          <p>• Connect nodes by dragging handles</p>
+          <p className="mb-2 font-medium">💡 <strong>Pro Tips:</strong></p>
+          <div className="space-y-1">
+            <p>• Double-click nodes to configure settings</p>
+            <p>• Connect nodes by dragging handles</p>
+            <p>• Use <kbd className="px-1 bg-muted rounded">Del</kbd> to remove selected items</p>
+          </div>
         </div>
       </div>
     </div>
