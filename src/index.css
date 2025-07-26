@@ -187,3 +187,34 @@
     @apply bg-black/10 backdrop-blur-md border border-white/10;
   }
 }
+
+/* React Flow Controls Styling */
+.react-flow__controls {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.react-flow__controls-button {
+  background: white !important;
+  border: none !important;
+  color: #374151 !important;
+  transition: all 0.2s !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+/* Handle Styling - Remove Animations */
+.react-flow__handle {
+  transition: none !important;
+  animation: none !important;
+}
+
+.react-flow__handle:hover {
+  transition: none !important;
+  animation: none !important;
+}

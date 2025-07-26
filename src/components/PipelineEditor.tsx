@@ -11,7 +11,8 @@ import {
   Background,
   MiniMap,
   useReactFlow,
-  ReactFlowProvider
+  ReactFlowProvider,
+  MarkerType
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -43,7 +44,12 @@ export const PipelineEditor = () => {
   const { toast } = useToast();
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'smoothstep' }, eds)),
+    (params: Connection) => setEdges((eds) => addEdge({ 
+      ...params, 
+      type: 'smoothstep',
+      style: { strokeWidth: 2, stroke: '#374151' },
+      markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 }
+    }, eds)),
     [setEdges]
   );
 
@@ -221,7 +227,7 @@ export const PipelineEditor = () => {
       />
 
       {/* Sidebar Palette */}
-      <div className="w-80 border-r border-border shadow-xl relative z-10">
+      <div className="w-56 border-r border-border shadow-xl relative z-10">
         <ElementPalette />
       </div>
 
@@ -252,6 +258,9 @@ export const PipelineEditor = () => {
             onNodeDoubleClick={onNodeDoubleClick}
             nodeTypes={nodeTypes}
             fitView
+            defaultViewport={{ x: 0, y: 0, zoom: 0.25 }}
+            minZoom={0.1}
+            maxZoom={2}
             className="bg-gradient-surface"
             proOptions={{ hideAttribution: true }}
           >
