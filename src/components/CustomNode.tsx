@@ -53,13 +53,12 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
 
   return (
     <div className={`
-      relative bg-gradient-node rounded-xl border-2 transition-all duration-300 node-enter
-      ${selected ? 'border-primary shadow-glow scale-105' : `${colors.border} hover:border-primary/50 hover:shadow-lg`}
-      group min-w-[180px] hover-scale backdrop-blur-sm
+      relative bg-gradient-node rounded-xl border-2
+      ${selected ? 'border-primary shadow-glow' : `${colors.border}`}
+      group min-w-[180px] backdrop-blur-sm
     `}>
-      {/* Accent bar with gradient */}
-      <div className={`h-1 ${colors.accent} rounded-t-[10px] relative overflow-hidden`}>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
+      {/* Accent bar */}
+      <div className={`h-1 ${colors.accent} rounded-t-[10px]`}>
       </div>
       
       {/* Node content */}
@@ -67,9 +66,8 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         <div className="flex items-center space-x-3 mb-2">
           <div className={`
             p-2 rounded-lg ${colors.bg} border ${colors.border}
-            transition-all duration-200 group-hover:scale-110 group-hover:shadow-md
           `}>
-            <IconComponent className={`w-5 h-5 ${colors.color} transition-transform duration-200 group-hover:rotate-12`} />
+            <IconComponent className={`w-5 h-5 ${colors.color}`} />
           </div>
           
           <div className="flex-1">
@@ -81,28 +79,28 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
             </p>
           </div>
 
-          <button className="opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-muted rounded hover-scale">
+          <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded">
             <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
-        {/* Configuration preview with animation */}
+        {/* Configuration preview */}
         {data.config && Object.keys(data.config).length > 0 && (
-          <div className="mt-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground animate-fade-in">
+          <div className="mt-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
             <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>Configured</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Connection handles with enhanced styling */}
+      {/* Connection handles - positioned at node border */}
       {!isInputNode && (
         <Handle
           type="target"
           position={Position.Left}
-          className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-white hover:!scale-125 transition-all duration-200 !shadow-md"
+          className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-white !shadow-md !left-[-6px]"
         />
       )}
       
@@ -110,7 +108,7 @@ export const CustomNode: React.FC<NodeProps> = ({ data, selected }) => {
         <Handle
           type="source"
           position={Position.Right}
-          className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-white hover:!scale-125 transition-all duration-200 !shadow-md"
+          className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-white !shadow-md !right-[-6px]"
         />
       )}
     </div>

@@ -46,7 +46,7 @@ export const PipelineEditor = () => {
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ 
       ...params, 
-      type: 'smoothstep',
+      type: 'default',
       style: { strokeWidth: 2, stroke: '#374151' },
       markerEnd: { type: MarkerType.ArrowClosed, width: 20, height: 20 }
     }, eds)),
